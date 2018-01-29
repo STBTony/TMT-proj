@@ -2,17 +2,29 @@
   <div>
     <div class="btn-find">
       <p>{{ msg }}</p>
+      <p class="input-bpm">
+        <input name="bpm" id="bpm" v-model="bpm" min="0" max="300">
+        <label for="bpm">BPM</label>
+      </p>
       <nav class="cl-effect-18">
-        <a @click="getSongList"> Gimme some love. </a>
+        <a @click="gettrackList"> Gimme some love. </a>
       </nav>
-      <div id="song-feat">
-        <p v-for="song in data.songList">
-          <span v-for="value in song">
+      <table id="song-feat">
+        <tr>
+          <th>Name</th>
+          <th>Artist</th>
+          <th>Tempo</th>
+        </tr>
+        <tr v-for="track in data.trackList">
+<!--           <span v-for="value in song">
             {{ value }}
-          </span>
-        </p>
+          </span> -->
+          <td>{{track.name}}</td>
+          <td>{{track.artists.map(function(artist){return artist.name}).toString()}}</td>
+          <td>{{track.analysis.tempo}}</td>
+        </tr>
 
-      </div>
+      </table>
     </div>
   </div>
 </template>
@@ -21,21 +33,31 @@
 let apiURL = 'http://localhost:8000'
 
 export default {
-  name: 'Index',
+  name: 'Generator',
   data () {
     return {
       msg: 'Sup bitches.',
+      bpm: 120,
+      duration: 30,
+      genre: 'Funk',
       data: {
-        songList: []
+        trackList: []
       }
     }
   },
   methods: {
-    getSongList () {
-      this.$http.get(apiURL + '/api/v1/songs').then(response => {
+    gettrackList () {
+      console.log(this.bpm);
+      this.$http.get(apiURL + '/api/v1/generate', {
+        params: {
+          bpm: this.bpm,
+          duration: this.duration,
+          genre: this.genre
+        }
+      }).then(response => {
         // get body data
-        this.someData = response.body
-        console.log(this.someData)
+        this.data.trackList = response.body
+        console.log(response.body)
       }, response => {
         // error callback
         console.log(response)
@@ -50,17 +72,49 @@ export default {
 .btn-find {
   width: 100%;
   text-align: center;
-  height: 10000px;
 }
 
-.song-feat {
-  margin: 15px, 25px;
+#song-feat {
+  width: 100%;
+  text-align: center;
+  padding-left: 25%;
+  padding-right: 25%;
+  color: #e0e0e0;
+  margin-bottom: 60px;
+}
+
+#song-feat tr {
+  margin: 15px 0px;
+}
+
+#song-feat td {
+  font-weight: 300;
+  width: 80px;
+}
+
+
+.input-bpm {
+  margin: 15px 25px;
+}
+
+.input-bpm input {
+  background: transparent !important;
+  border: none !important;
+  font-size: 80px;
+  font-weight: 100;
+  color: #fff;
+  width: 130px;
+  text-align: right;
+}
+
+.input-bpm label {
+  font-weight: 800;
 }
 
 nav a {
   position: relative;
   display: inline-block;
-  margin: 15px 25px;
+  margin: 30px;
   outline: none;
   color: #fff;
   text-decoration: none;
@@ -80,7 +134,7 @@ nav a:focus {
 
 .cl-effect-18 a {
   padding: 0 5px;
-  color: #9d9d9d;
+  color: #c0c0c0;
   font-weight: 700;
   -webkit-transition: color 0.3s;
   -moz-transition: color 0.3s;
@@ -95,7 +149,7 @@ nav a:focus {
   top: 50%;
   height: 2px;
   margin-top: -1px;
-  background: #9d9d9d;
+  background: #e6e6e6;
   content: '';
   z-index: -1;
   -webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
@@ -133,6 +187,7 @@ nav a:focus {
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   transform: rotate(45deg);
+  background: #c0c0c0;
 }
 
 .cl-effect-18 a:hover::after,
@@ -140,6 +195,7 @@ nav a:focus {
   -webkit-transform: rotate(-45deg);
   -moz-transform: rotate(-45deg);
   transform: rotate(-45deg);
+  background: #c0c0c0;
 }
 
 </style>
