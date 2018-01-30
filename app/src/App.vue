@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div v-if="!preloading">
-      <div id="bg"></div>
+      <div id="bg" v-bind:style="{ backgroundImage: 'url(' + image + ')' }"></div>
       <h1 class="title unselectable">TMT Spotify Playlist Generator</h1>
       <div id="overlay"></div>
       <router-view/>
@@ -14,6 +14,8 @@
 <script>
 import LoadingScreen from './components/LoadingScreen'
 
+let bg = ['girl', 'guitar', 'piano', 'record']
+
 export default {
   name: 'App',
   components: {
@@ -21,7 +23,8 @@ export default {
   },
   data() {
     return {
-      preloading: true
+      preloading: true,
+      image: 'static/img/' + bg[Math.floor(Math.random() * 4)] + '-min.jpg'
     }
   },
   mounted() {
@@ -55,7 +58,12 @@ html::-webkit-scrollbar { width: 0 !important }
   position: fixed;
   top: 0;
   left: 0;
-  background: url('assets/record.jpg') no-repeat center fixed;
+  /*background: url('assets/girl.jpg') no-repeat center fixed;*/
+  background: url('assets/record-min.jpg');
+  background: url('assets/piano-min.jpg');
+  background: url('assets/girl-min.jpg');
+  background: url('assets/guitar-min.jpg');
+  background: no-repeat center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -69,7 +77,7 @@ html::-webkit-scrollbar { width: 0 !important }
   margin-top: 15vh;
 }
 
-h1, h2, h3, p, a, span, button, input{
+h1, h2, h3, p, a, span, button, input, table {
   font-weight: 300;
   color: #fff;
   font-family: 'Josefin Sans', sans-serif;

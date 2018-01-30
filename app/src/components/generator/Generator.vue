@@ -37,7 +37,7 @@ export default {
   data () {
     return {
       msg: 'Sup bitches.',
-      bpm: 130,
+      bpm: 120,
       duration: 30,
       genre: 'Funk',
       data: {
@@ -79,7 +79,6 @@ export default {
   text-align: center;
   padding-left: 25%;
   padding-right: 25%;
-  color: #e0e0e0;
   margin-bottom: 60px;
 }
 
@@ -102,7 +101,6 @@ export default {
   border: none !important;
   font-size: 80px;
   font-weight: 100;
-  color: #fff;
   width: 130px;
   text-align: right;
 }

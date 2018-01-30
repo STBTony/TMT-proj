@@ -10,6 +10,8 @@ let MAX_REP = 10;
 let LIMIT = 50;
 let COUNTRY = 'CA';
 let BPM_THRESHOLD = 5;
+let SONG_PER_ALBUM = 5;
+let TOT_REP = 10;
 
 var newReleases = [];
 
@@ -41,16 +43,16 @@ function getToken() {
             theLoop(i);       // Call the loop again, and pass it the current value of i
           }
         }, 8000);
-      })(6);
+      })(TOT_REP);
     }, function(err) {
           console.log('Something went wrong when retrieving an access token', err);
     });
 }
 
 function init(rep) {
-  getNewReleases(rep);
+  console.log('curernt track list: ' + trackList.length);
   console.log('get new release!');
-  console.log(rep);
+  getNewReleases(rep);
 }
 
 // store new releases into newReleases
@@ -59,8 +61,8 @@ function getNewReleases(rep) {
   var songList = [];
   spotifyApi.getNewReleases({ limit : LIMIT, offset: LIMIT * rep, country: COUNTRY })
   .then(function(data) {
-    console.log('got new releases');
     fullInfo = data.body.albums.items;
+    console.log('got ' + fullInfo.length + ' new releases');
     // if (rep != 0) {
     //   setTimeout(function() {
     //     getNewReleases(rep - 1);
@@ -70,12 +72,12 @@ function getNewReleases(rep) {
   })
   .then(function(data) {
     return data.map(function(t, index) {
-      spotifyApi.getAlbumTracks(t, { limit : 1, offset : 0 })
+      spotifyApi.getAlbumTracks(t, { limit : SONG_PER_ALBUM, offset : 0 })
       .then(function(data) {
         fullInfo[index].tracks = data.body;
         songList = songList.concat(data.body.items);
         if (index === fullInfo.length - 1) {
-          console.log('got new tracks');
+          console.log('got ' + songList.length + ' new tracks');
           newReleases = newReleases.concat(fullInfo);
           getTrackFeatures(songList);
         }
@@ -83,7 +85,7 @@ function getNewReleases(rep) {
     });
   })
   .catch(function(error) {
-    console.log('get new releases error');
+    console.log('error getting new releases ');
     console.error(error);
   });
 }
@@ -94,17 +96,15 @@ function getTrackFeatures(songList) {
     return song.id;
   });
   var tempSongList = songList;
-  console.log(trackIds.length);
   spotifyApi.getAudioFeaturesForTracks(trackIds)
   .then(function(data) {
     console.log('got audio features');
-    console.log(data.body.audio_features);
     songList.map(function(song, index) {
       tempSongList[index].analysis = data.body.audio_features[index];
     });
     trackList = trackList.concat(tempSongList);
   }, function(err) {
-    console.log('get track features error');
+    console.log('error getting audio features ');
     console.error(err);
   });
 }
@@ -143,6 +143,7 @@ app.post('/api/v1/get-access', function (req, res) {
 
 app.post('/api/v1/add-more-to-server', function (req, res) {
   getNewReleases(req.query.offset);
+  console.log('add more!!');
 });
 
 app.get('/api/v1/new-releases', function (req, res) {
@@ -158,7 +159,6 @@ app.get('/api/v1/generate', function (req, res) {
   console.log('generate!');
 });
 
-// Listen to port 5000
 app.listen(8000, function () {
   console.log('Dev app listening on port 8000!');
 });
