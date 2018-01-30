@@ -37,7 +37,7 @@ export default {
   data () {
     return {
       msg: 'Sup bitches.',
-      bpm: 120,
+      bpm: 130,
       duration: 30,
       genre: 'Funk',
       data: {

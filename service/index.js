@@ -9,6 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 let MAX_REP = 10;
 let LIMIT = 50;
 let COUNTRY = 'CA';
+let BPM_THRESHOLD = 5;
 
 var newReleases = [];
 
@@ -39,7 +40,7 @@ function getToken() {
           if (--i) {          // If i > 0, keep going
             theLoop(i);       // Call the loop again, and pass it the current value of i
           }
-        }, 5000);
+        }, 8000);
       })(6);
     }, function(err) {
           console.log('Something went wrong when retrieving an access token', err);
@@ -47,11 +48,9 @@ function getToken() {
 }
 
 function init(rep) {
-  setTimeout(function() {
-    getNewReleases(rep);
-    console.log('yay');
-    console.log(rep);
-  }, 5000);
+  getNewReleases(rep);
+  console.log('get new release!');
+  console.log(rep);
 }
 
 // store new releases into newReleases
@@ -113,7 +112,7 @@ function getTrackFeatures(songList) {
 function generate(param) {
   var generated = [];
   for (var i = trackList.length - 1; i >= 0; i--) {
-    if (Math.abs(parseInt(trackList[i].analysis.tempo) - parseInt(param.bpm)) < 5) {
+    if (Math.abs(parseInt(trackList[i].analysis.tempo) - parseInt(param.bpm)) < BPM_THRESHOLD) {
       // console.log(trackList[i].analysis.tempo - param.bpm);
       generated.push(trackList[i]);
     }
