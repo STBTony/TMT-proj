@@ -6,10 +6,10 @@
         <input name="bpm" id="bpm" v-model="bpm" min="0" max="300">
         <label for="bpm">BPM</label>
       </p>
-      <nav class="cl-effect-18">
-        <a @click="gettrackList"> Gimme some love. </a>
+      <nav class="cl-effect-18 get-tracklist">
+        <a @click="getTrackList"> Gimme some love. </a>
       </nav>
-      <table id="song-feat">
+      <table v-if="data.trackList.length != 0" id="song-feat">
         <tr>
           <th>Name</th>
           <th>Artist</th>
@@ -25,13 +25,18 @@
         </tr>
 
       </table>
+
+      <nav v-if="data.trackList.length != 0" class="cl-effect-18 create-playlist">
+        <a @click="createPlaylist"> Export dat playlist, or else.</a>
+        <a v-if="data.playlistURL !== null" v-bind:href="data.playlistURL" target="_blank">Here's your playlist!</a>
+      </nav>
     </div>
   </div>
 </template>
 
 <script>
-let apiURLDev = 'http://localhost:8000'
-let apiURL = 'https://tmtproj.herokuapp.com'
+var apiURL = 'https://tmtproj.herokuapp.com'
+apiURL = 'http://localhost:5000'
 
 export default {
   name: 'Generator',
@@ -42,13 +47,13 @@ export default {
       duration: 30,
       genre: 'Funk',
       data: {
-        trackList: []
+        trackList: [],
+        playlistURL: null
       }
     }
   },
   methods: {
-    gettrackList () {
-      console.log(this.bpm);
+    getTrackList () {
       this.$http.get(apiURL + '/api/v1/generate', {
         params: {
           bpm: this.bpm,
@@ -59,6 +64,20 @@ export default {
         // get body data
         this.data.trackList = response.body
         console.log(response.body)
+        this.data.playlistURL = null
+      }, response => {
+        // error callback
+        console.log(response)
+      })
+    },
+    createPlaylist () {
+      this.$http.post(apiURL + '/api/v1/create-playlist', {
+          name: 'HIPEBEAST ' + this.bpm + ' BPM ' + this.genre + ' PLAYLIST',
+          trackList: this.data.trackList
+        }).then(response => {
+        // get body data
+        this.data.playlistURL = response.body.external_urls.spotify
+        console.log(this.data.playlistURL)
       }, response => {
         // error callback
         console.log(response)
@@ -70,9 +89,30 @@ export default {
 
 <style scoped>
 
+p, a {
+  font-size: 25px;
+}
+
 .btn-find {
   width: 100%;
   text-align: center;
+}
+
+.input-bpm {
+  margin: 15px 25px;
+}
+
+.input-bpm input {
+  background: transparent !important;
+  border: none !important;
+  font-size: 120px;
+  font-weight: 100;
+  width: 220px;
+  text-align: right;
+}
+
+.input-bpm label {
+  font-weight: 800;
 }
 
 #song-feat {
@@ -80,7 +120,9 @@ export default {
   text-align: center;
   padding-left: 25%;
   padding-right: 25%;
+  margin-top: 60px;
   margin-bottom: 60px;
+  font-size: 25px;
 }
 
 #song-feat tr {
@@ -90,24 +132,7 @@ export default {
 #song-feat td {
   font-weight: 300;
   width: 80px;
-}
-
-
-.input-bpm {
-  margin: 15px 25px;
-}
-
-.input-bpm input {
-  background: transparent !important;
-  border: none !important;
-  font-size: 100px;
-  font-weight: 100;
-  width: 200px;
-  text-align: right;
-}
-
-.input-bpm label {
-  font-weight: 800;
+  font-size: 20px;
 }
 
 nav a {
@@ -118,7 +143,7 @@ nav a {
   color: #fff;
   text-decoration: none;
   letter-spacing: 1px;
-  font-size: 1.35em;
+  font-size: 25px;
 }
 
 nav a:hover,
