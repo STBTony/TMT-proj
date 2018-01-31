@@ -11,7 +11,7 @@ let LIMIT = 50;
 let COUNTRY = 'CA';
 let BPM_THRESHOLD = 5;
 let SONG_PER_ALBUM = 5;
-let TOT_REP = 10;
+let TOT_REP = 1;
 
 var newReleases = [];
 
@@ -136,6 +136,12 @@ var allowCrossDomain = function(req, res, next) {
 
 app.use(allowCrossDomain);
 
+app.use(express.static(__dirname + '/dist'));
+// app.get('/', function (req, res) {
+//   res.send('dist/index.html');
+//   console.log('Shit we are discovered!');
+// });
+
 app.post('/api/v1/get-access', function (req, res) {
   res.json(getToken());
   console.log('access!!');
@@ -159,6 +165,7 @@ app.get('/api/v1/generate', function (req, res) {
   console.log('generate!');
 });
 
-app.listen(8000, function () {
-  console.log('Dev app listening on port 8000!');
+var port = process.env.PORT || 8000;
+app.listen(port, function () {
+  console.log('listening on port ' + port);
 });

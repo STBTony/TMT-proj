@@ -30,7 +30,8 @@
 </template>
 
 <script>
-let apiURL = 'http://localhost:8000'
+let apiURLDev = 'http://localhost:8000'
+let apiURL = 'https://tmtproj.herokuapp.com'
 
 export default {
   name: 'Generator',
@@ -99,9 +100,9 @@ export default {
 .input-bpm input {
   background: transparent !important;
   border: none !important;
-  font-size: 80px;
+  font-size: 100px;
   font-weight: 100;
-  width: 130px;
+  width: 200px;
   text-align: right;
 }
 
