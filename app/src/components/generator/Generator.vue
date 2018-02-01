@@ -33,7 +33,7 @@
 
 <script>
 var apiURL = ''
-apiURL = 'http://localhost:5000'
+// apiURL = 'http://localhost:5000'
 
 export default {
   name: 'Generator',
