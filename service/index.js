@@ -12,8 +12,8 @@ let BPM_THRESHOLD = 5;
 let SONG_PER_ALBUM = 2;
 let TOT_REP = 10;
 
-var redirectUri = 'https://tmtproj.heroku.com/api/v1/callback';
-var redirectUri = 'http://localhost:5000/api/v1/callback';
+var redirectUri = 'https://stbtony.github.io/TMT-proj';
+// var redirectUri = 'http://localhost:5000/api/v1/callback';
 
 var newReleases = [];
 
@@ -243,7 +243,6 @@ app.get('/api/v1/user-permission', function (req, res) {
 app.post('/api/v1/create-playlist', function (req, res) {
   // res.json(createPlaylist(req.query));
   var param = req.body;
-  console.log(req.body);
   console.log('create playlist!');
   var playlist;
   var userId = userSpotify.id || '22hmgfkwzzikpio72fafb2tla';
@@ -271,7 +270,7 @@ app.post('/api/v1/create-playlist', function (req, res) {
   });
 });
 
-app.get('/api/v1/callback', (req, res) => {
+app.get('/callback', (req, res) => {
   const { code, state } = req.query;
   console.log('code: ' + code);
   console.log('state: ' + state);
