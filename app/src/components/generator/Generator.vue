@@ -9,25 +9,22 @@
       <nav class="cl-effect-18 get-tracklist">
         <a @click="getTrackList"> Gimme some love. </a>
       </nav>
-      <table v-if="data.trackList.length != 0" id="song-feat">
-        <tr>
-          <th>Name</th>
-          <th>Artist</th>
-          <th>Tempo</th>
-        </tr>
-        <tr v-for="track in data.trackList">
-<!--           <span v-for="value in song">
-            {{ value }}
-          </span> -->
-          <td>{{track.name}}</td>
-          <td>{{track.artists.map(function(artist){return artist.name}).toString()}}</td>
-          <td>{{track.analysis.tempo}}</td>
-        </tr>
-
-      </table>
-
+      <div class="section">
+        <table v-if="data.trackList.length != 0" id="song-feat">
+          <tr>
+            <th>Name</th>
+            <th>Artist</th>
+            <th class="no-display-mobile">Tempo</th>
+          </tr>
+          <tr v-for="track in data.trackList">
+            <td>{{track.name}}</td>
+            <td>{{track.artists.map(function(artist){return artist.name}).toString()}}</td>
+            <td class="no-display-mobile">{{track.analysis.tempo}}</td>
+          </tr>
+        </table>
+      </div>
       <nav v-if="data.trackList.length != 0" class="cl-effect-18 create-playlist">
-        <a v-if="data.playlistURL === null" @click="createPlaylist"> Export dat playlist, or else.</a>
+        <a v-if="data.playlistURL === null" @click="createPlaylist"> Export playlist.</a>
         <a v-if="data.playlistURL !== null" v-bind:href="data.playlistURL" target="_blank">Here's your playlist!</a>
       </nav>
     </div>
@@ -36,7 +33,7 @@
 
 <script>
 var apiURL = ''
-// apiURL = 'http://localhost:5000'
+apiURL = 'http://localhost:5000'
 
 export default {
   name: 'Generator',
@@ -127,12 +124,12 @@ p, a {
 
 #song-feat tr {
   margin: 15px 0px;
+  font-size: 20px;
 }
 
 #song-feat td {
   font-weight: 300;
   width: 80px;
-  font-size: 20px;
 }
 
 .create-playlist {
@@ -225,5 +222,31 @@ nav a:focus {
   transform: rotate(-45deg);
   background: #c0c0c0;
 }
+
+
+@media (max-width: 961px) and (min-width:320px) { /* smartphones, iPhone, portrait 480x320 phones */ 
+  #song-feat {
+    width: 200px;
+    padding: 0;
+    text-align: center;
+    margin: 0 auto;
+  }
+  .section {
+    width: 100%;
+    text-align: center;
+  }
+  #song-feat tr {
+    font-size: 15px;
+  }
+  .no-display-mobile {
+    display: none;
+  }
+}
+@media (min-width:481px)  { /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */ }
+@media (min-width:641px)  { /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */ }
+@media (min-width:961px)  { /* tablet, landscape iPad, lo-res laptops ands desktops */ }
+@media (min-width:1025px) { /* big landscape tablets, laptops, and desktops */ }
+@media (min-width:1281px) { /* hi-res laptops and desktops */ }
+
 
 </style>
