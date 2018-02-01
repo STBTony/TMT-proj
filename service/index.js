@@ -6,16 +6,20 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-let MAX_REP = 10;
 let LIMIT = 50;
 let COUNTRY = 'CA';
 let BPM_THRESHOLD = 5;
-let SONG_PER_ALBUM = 5;
-let TOT_REP = 1;
+let SONG_PER_ALBUM = 2;
+let TOT_REP = 10;
+
+var redirectUri = 'https://tmtproj.heroku.com/api/v1/callback';
+var redirectUri = 'http://localhost:5000/api/v1/callback';
 
 var newReleases = [];
 
 var trackList = [];
+
+var userSpotify = {};
 
 console.log('++++++++++++ Server Starts ++++++++++++');
 
@@ -25,7 +29,16 @@ var spotifyApi = new SpotifyWebApi({
   clientSecret : '76d22bbf58314aee932165dff0ca16e5'
 });
 
+var userSpotifyApi = new SpotifyWebApi({
+  clientId : '0d84ec941055454db69a02b84e2089aa',
+  clientSecret : '76d22bbf58314aee932165dff0ca16e5',
+  redirectUri : redirectUri
+});
+
 getToken();
+setTimeout(function() {
+  console.log(refreshUserAccess());
+}, 1800000);
 
 // authenticate and get token
 function getToken() {
@@ -120,6 +133,57 @@ function generate(param) {
   return generated;
 }
 
+// function createPlaylist(param) {
+//     // clientId, clientSecret and refreshToken has been set on the api object previous to this call.
+//     var playlist;
+//     var userId = '22hmgfkwzzikpio72fafb2tla';
+//     userSpotifyApi.createPlaylist(userId, param.name, { 'public' : true })
+//     .then(function(data) {
+//       console.log('Created playlist: ' + data.body.id)
+//       var tempStr = 'spotify:track:';
+//       var parsedTrackList = [];
+//       for (var i = 0; i < param.trackList.length; i++) {
+//         parsedTrackList.push(tempStr + param.trackList[i].id);
+//       }
+//       playlist = data.body;
+//       spotifyApi.addTracksToPlaylist(userId, playlist.id, parsedTrackList)
+//         .then(function(data) {
+//           console.log('Added tracks to playlist!');
+//           return playlist;
+//         }, function(err) {
+//           console.log('Error add tracks to playlist!', err);
+//           return playlist;
+//         });
+//     }, function(err) {
+//       console.log('Error Create Playlist!', err);
+//     });
+// }
+
+function userAuthenticate() {
+  var scopes = ['playlist-modify-public', 'playlist-modify-private'],
+      redirectUri = redirectUri,
+      state = 'some-state-of-my-choice';
+  // Setting credentials can be done in the wrapper's constructor, or using the API object's setters.
+
+  // Create the authorization URL
+  var authorizeURL = userSpotifyApi.createAuthorizeURL(scopes, state);
+  return authorizeURL;
+}
+
+function refreshUserAccess() {
+  userSpotifyApi.refreshAccessToken()
+  .then(function(data) {
+    console.log('The access token has been refreshed!');
+
+    // Save the access token so that it's used in future calls
+    userSpotifyApi.setAccessToken(data.body['access_token']);
+    return 'success';
+  }, function(err) {
+    console.log('Could not refresh access token', err);
+    return 'shit';
+  });
+}
+
 // fix dev env local host header
 var allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -142,13 +206,19 @@ app.use(express.static(__dirname + '/dist'));
 //   console.log('Shit we are discovered!');
 // });
 
-app.post('/api/v1/get-access', function (req, res) {
+app.post('/api/v1/get client token', function (req, res) {
+  console.log('get client token');
   res.json(getToken());
-  console.log('access!!');
 });
 
+app.post('/api/v1/refresh-user-access', function (req, res) {
+  console.log('refresh user access');
+  res.json(refreshUserAccess());
+});
+
+
 app.post('/api/v1/add-more-to-server', function (req, res) {
-  getNewReleases(req.query.offset);
+  getNewReleases(req.body.offset);
   console.log('add more!!');
 });
 
@@ -159,13 +229,76 @@ app.get('/api/v1/new-releases', function (req, res) {
 });
 
 app.get('/api/v1/generate', function (req, res) {
-  // generate(newReleases, request.query);
   res.json(generate(req.query));
   console.log(req.query);
   console.log('generate!');
 });
 
-var port = process.env.PORT || 8000;
+app.get('/api/v1/user-permission', function (req, res) {
+  res.json(userAuthenticate(req.query));
+  console.log(req.query);
+  console.log('get user permission!');
+});
+
+app.post('/api/v1/create-playlist', function (req, res) {
+  // res.json(createPlaylist(req.query));
+  var param = req.body;
+  console.log(req.body);
+  console.log('create playlist!');
+  var playlist;
+  var userId = userSpotify.id || '22hmgfkwzzikpio72fafb2tla';
+  userSpotifyApi.createPlaylist(userId, param.name, { 'public' : true })
+  .then(function(data) {
+    playlist = data.body;
+    console.log('Created playlist');
+    var parsedTrackList = [];
+    var tempStr = 'spotify:track:';
+    var parsedTrackList = [];
+    for (var i = 0; i < param.trackList.length; i++) {
+      parsedTrackList.push(tempStr + param.trackList[i].id);
+    }
+    userSpotifyApi.addTracksToPlaylist(userId, playlist.id, parsedTrackList)
+      .then(function(data) {
+        console.log('Added tracks to playlist!');
+        res.json(playlist);
+      }, function(err) {
+        console.log('Error add tracks to playlist!', err);
+        res.json(playlist);
+      });
+  }, function(err) {
+    console.log('Error Create Playlist!', err);
+    res.json('well shit');
+  });
+});
+
+app.get('/api/v1/callback', (req, res) => {
+  const { code, state } = req.query;
+  console.log('code: ' + code);
+  console.log('state: ' + state);
+  userSpotifyApi.authorizationCodeGrant(code)
+  .then(function(data) {
+    console.log('The token expires in ' + data.body['expires_in']);
+    console.log('The access token is ' + data.body['access_token']);
+    console.log('The refresh token is ' + data.body['refresh_token']);
+    // Set the access token on the API object to use it in later calls
+    userSpotifyApi.setAccessToken(data.body['access_token']);
+    userSpotifyApi.setRefreshToken(data.body['refresh_token']);
+    userSpotifyApi.getMe()
+      .then(function(data) {
+        console.log('authorized user id:', data.body.id);
+        userSpotify.id = data.body.id;
+        res.redirect('/#/user/' + data.body.id);
+      }, function(err) {
+        console.log('Error getting myself!', err);
+      });
+
+  }, function(err) {
+    console.log('Error authenticating from callback!', err);
+    res.redirect('/#/error/invalid token');
+  });
+});
+
+var port = process.env.PORT || 5000;
 app.listen(port, function () {
   console.log('listening on port ' + port);
 });

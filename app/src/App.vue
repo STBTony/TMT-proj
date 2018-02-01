@@ -73,7 +73,7 @@ html::-webkit-scrollbar { width: 0 !important }
 .title {
   font-weight: 800;
   text-align: center;
-  font-size: 60px;
+  font-size: 120px;
   margin-top: 15vh;
 }
 
@@ -84,6 +84,7 @@ h1, h2, h3, p, a, span, button, input, table {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 a:hover {
  cursor: pointer;
 }
