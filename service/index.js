@@ -270,7 +270,7 @@ app.post('/api/v1/create-playlist', function (req, res) {
   });
 });
 
-app.get('/callback', (req, res) => {
+app.post('/callback', (req, res) => {
   const { code, state } = req.query;
   console.log('code: ' + code);
   console.log('state: ' + state);
