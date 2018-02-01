@@ -9,10 +9,16 @@
   <body>
     "docs" for the project. sure lol
     <script type="text/javascript">
-      console.log(window.location.href.replace('stbtony.github.io/TMT-proj/', 'tmtproj.heroku.com/callback'));
-        $.post(window.location.href.replace('stbtony.github.io/TMT-proj/', 'tmtproj.heroku.com/callback'), function(data, status){
-          console.log("CELEBRATION");
+      console.log(window.location.href.replace('stbtony.github.io/TMT-proj/', 'tmtproj.heroku.com/api/v1/callback'));
+      // $.post(window.location.href.replace('stbtony.github.io/TMT-proj/', 'tmtproj.heroku.com/callback'), function(data, status){
+      //   console.log("CELEBRATION");
+      // });
+      $.ajax({
+        type: "POST",
+        url: "localhost:5000/api/v1/callback",
+        // url: "http://tmtproj.herokuapp.com/api/v1/user-permission",
+        data: {'href': window.location.href}
       });
-    </script>
+      </script>
   </body>
 </html>

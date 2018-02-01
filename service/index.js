@@ -13,7 +13,7 @@ let SONG_PER_ALBUM = 2;
 let TOT_REP = 10;
 
 var redirectUri = 'https://stbtony.github.io/TMT-proj';
-// var redirectUri = 'http://localhost:5000/api/v1/callback';
+var redirectUri = 'http://localhost:5000/api/v1/callback';
 
 var newReleases = [];
 
@@ -270,8 +270,9 @@ app.post('/api/v1/create-playlist', function (req, res) {
   });
 });
 
-app.post('/callback', (req, res) => {
-  const { code, state } = req.query;
+app.post('/api/v1/callback', (req, res) => {
+  console.log('requestbodyyyyyyyyyyyyyyyyyyyy');
+  const { code, state } = req.body;
   console.log('code: ' + code);
   console.log('state: ' + state);
   userSpotifyApi.authorizationCodeGrant(code)
