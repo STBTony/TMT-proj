@@ -1,16 +1,17 @@
 var SpotifyWebApi = require('spotify-web-api-node');
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser');
+var express = require('express')
+var app = express()
+var bodyParser = require('body-parser');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: "50mb"}));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
 let LIMIT = 50;
 let COUNTRY = 'CA';
 let BPM_THRESHOLD = 5;
-let SONG_PER_ALBUM = 2;
+let SONG_PER_ALBUM = 50;
 let TOT_REP = 10;
+let API_SIZE_LIMIT = 100;
 
 var redirectUri = 'https://stbtony.github.io/TMT-proj';
 // var redirectUri = 'http://localhost:5000/api/v1/callback';
@@ -35,28 +36,31 @@ var userSpotifyApi = new SpotifyWebApi({
   redirectUri : redirectUri
 });
 
-getToken();
-setTimeout(function() {
-  console.log(refreshUserAccess());
+getToken(true);
+setInterval(function() {
+  console.log("refershing token automatically");
+  refreshUserAccess();
+  getToken(false);
 }, 1800000);
 
 // authenticate and get token
-function getToken() {
+function getToken(onStart) {
   spotifyApi.clientCredentialsGrant()
     .then(function(data) {
       console.log('The access token expires in ' + data.body['expires_in']);
       console.log('The access token is ' + data.body['access_token']);
       // Save the access token so that it's used in future calls
       spotifyApi.setAccessToken(data.body['access_token']);
-
-      (function theLoop (i) {
-        setTimeout(function () {
-          init(i);
-          if (--i) {          // If i > 0, keep going
-            theLoop(i);       // Call the loop again, and pass it the current value of i
-          }
-        }, 8000);
-      })(TOT_REP);
+      if (onStart === true) {
+        (function theLoop (i) {
+          setTimeout(function () {
+            init(i);
+            if (--i) {          // If i > 0, keep going
+              theLoop(i);       // Call the loop again, and pass it the current value of i
+            }
+          }, 10000);
+        })(TOT_REP);
+      }
     }, function(err) {
           console.log('Something went wrong when retrieving an access token', err);
     });
@@ -89,10 +93,16 @@ function getNewReleases(rep) {
       .then(function(data) {
         fullInfo[index].tracks = data.body;
         songList = songList.concat(data.body.items);
+        // if (data.body.items.length + songList.length <= API_SIZE_LIMIT) {
+        // }
         if (index === fullInfo.length - 1) {
           console.log('got ' + songList.length + ' new tracks');
           newReleases = newReleases.concat(fullInfo);
-          getTrackFeatures(songList);
+
+          while (songList.length > 0) {
+            var songListChunk = songList.splice(0, API_SIZE_LIMIT);
+            getTrackFeatures(songListChunk);
+          }
         }
       })
     });
@@ -199,7 +209,6 @@ var allowCrossDomain = function(req, res, next) {
 };
 
 app.use(allowCrossDomain);
-
 app.use(express.static(__dirname + '/dist'));
 // app.get('/', function (req, res) {
 //   res.send('dist/index.html');
@@ -216,6 +225,10 @@ app.post('/api/v1/refresh-user-access', function (req, res) {
   res.json(refreshUserAccess());
 });
 
+app.get('/api/v1/refresh-user-access', function (req, res) {
+  console.log('local testing refresh user access');
+  res.json(refreshUserAccess());
+});
 
 app.post('/api/v1/add-more-to-server', function (req, res) {
   getNewReleases(req.body.offset);
@@ -256,14 +269,22 @@ app.post('/api/v1/create-playlist', function (req, res) {
     for (var i = 0; i < param.trackList.length; i++) {
       parsedTrackList.push(tempStr + param.trackList[i].id);
     }
-    userSpotifyApi.addTracksToPlaylist(userId, playlist.id, parsedTrackList)
-      .then(function(data) {
-        console.log('Added tracks to playlist!');
-        res.json(playlist);
-      }, function(err) {
-        console.log('Error add tracks to playlist!', err);
-        res.json(playlist);
-      });
+    while (parsedTrackList.length > 0) {
+      var parsedChunk = parsedTrackList.splice(0, API_SIZE_LIMIT);
+      userSpotifyApi.addTracksToPlaylist(userId, playlist.id, parsedChunk)
+        .then(function(data) {
+          console.log('Added tracks to playlist!');
+          if (parsedTrackList.length === 0) {
+            res.json(playlist);
+          }
+        }, function(err) {
+          console.log('Error add tracks to playlist!', err);
+          if (parsedTrackList.length === 0) {
+            res.json(playlist);
+          }
+        });
+    }
+
   }, function(err) {
     console.log('Error Create Playlist!', err);
     res.json('well shit');
@@ -271,9 +292,37 @@ app.post('/api/v1/create-playlist', function (req, res) {
 });
 
 app.post('/api/v1/callback', (req, res) => {
-  console.log('requestbodyyyyyyyyyyyyyyyyyyyy');
+  console.log('uer permission authorizing');
   const code = req.body.code;
   const state = req.body.state;
+  console.log('code: ' + code);
+  console.log('state: ' + state);
+  userSpotifyApi.authorizationCodeGrant(code)
+  .then(function(data) {
+    console.log('The token expires in ' + data.body['expires_in']);
+    console.log('The access token is ' + data.body['access_token']);
+    console.log('The refresh token is ' + data.body['refresh_token']);
+    // Set the access token on the API object to use it in later calls
+    userSpotifyApi.setAccessToken(data.body['access_token']);
+    userSpotifyApi.setRefreshToken(data.body['refresh_token']);
+    userSpotifyApi.getMe()
+      .then(function(data) {
+        console.log('authorized user id:', data.body.id);
+        userSpotify.id = data.body.id;
+        res.redirect('/#/user/' + data.body.id);
+      }, function(err) {
+        console.log('Error getting myself!', err);
+      });
+
+  }, function(err) {
+    console.log('Error authenticating from callback!', err);
+    res.redirect('/#/error/invalid token');
+  });
+});
+
+app.get('/api/v1/callback', (req, res) => {
+  console.log('localhost testing callback');
+  const { code, state } = req.query;
   console.log('code: ' + code);
   console.log('state: ' + state);
   userSpotifyApi.authorizationCodeGrant(code)

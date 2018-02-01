@@ -27,7 +27,7 @@
       </table>
 
       <nav v-if="data.trackList.length != 0" class="cl-effect-18 create-playlist">
-        <a @click="createPlaylist"> Export dat playlist, or else.</a>
+        <a v-if="data.playlistURL === null" @click="createPlaylist"> Export dat playlist, or else.</a>
         <a v-if="data.playlistURL !== null" v-bind:href="data.playlistURL" target="_blank">Here's your playlist!</a>
       </nav>
     </div>
