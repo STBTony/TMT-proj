@@ -36,7 +36,7 @@
 
 <script>
 var apiURL = 'https://tmtproj.herokuapp.com'
-apiURL = 'http://localhost:5000'
+// apiURL = 'http://localhost:5000'
 
 export default {
   name: 'Generator',
@@ -72,7 +72,7 @@ export default {
     },
     createPlaylist () {
       this.$http.post(apiURL + '/api/v1/create-playlist', {
-          name: 'HIPEBEAST ' + this.bpm + ' BPM ' + this.genre + ' PLAYLIST',
+          name: 'HIPEASS ' + this.bpm + ' BPM ' + ' NEW ON SPOTIFY PLAYLIST',
           trackList: this.data.trackList
         }).then(response => {
         // get body data
@@ -133,6 +133,10 @@ p, a {
   font-weight: 300;
   width: 80px;
   font-size: 20px;
+}
+
+.create-playlist {
+  margin-bottom: 120px;
 }
 
 nav a {
