@@ -1,11 +1,14 @@
 <template>
-  <div v-bind:style="styles" class="spinner"></div>
+  <div class="loading-screen">
+    <div v-bind:style="styles" class="spinner"></div>
+  </div>
+
 </template>
 <script>
 export default {
   props: {
     size: {
-      default: '40px'
+      default: '50px'
     }
   },
   computed: {
@@ -19,12 +22,30 @@ export default {
 }
 </script>
 <style scoped>
+  .loading-screen {
+    height: 100%;
+    width:  100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color:rgba(255, 255, 255, 0.2);
+    z-index: 100;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+  }
   .spinner {
     transform: translate3d(0, 0, 0);
     position: relative;
-    background: rgba(25, 165, 152, 0.5);
+    background: #bec8ff;
     border-radius: 50%;
     overflow: hidden;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .spinner:before, .spinner:after {
     content: '';
@@ -36,16 +57,16 @@ export default {
     border-radius: 50%;
   }
   .spinner:before {
-    animation: circle-5-spinner 3s infinite;
+    animation: circle-5-spinner 1s infinite;
     transform-origin: 0 50%;
     left: 0;
     background: #c7efcf;
   }
   .spinner:after {
-    animation: circle-5-spinner 3s 0.2s reverse infinite;
+    animation: circle-5-spinner 1s 0.2s reverse infinite;
     transform-origin: 100% 50%;
     right: 0;
-    background: #eef5db;
+    background: #fff;
   }
   @keyframes circle-5-spinner {
     0% {

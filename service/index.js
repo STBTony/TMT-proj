@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:500
 
 let LIMIT = 50;
 let COUNTRY = 'CA';
-let BPM_THRESHOLD = 5;
+let BPM_THRESHOLD = 3;
 let SONG_PER_ALBUM = 50;
 let TOT_REP = 10;
 let API_SIZE_LIMIT = 100;
@@ -113,6 +113,7 @@ function getNewReleases(rep) {
   });
 }
 
+
 // get track features and store the track info and analysis into trackList
 function getTrackFeatures(songList) {
   var trackIds = songList.map(function(song) {
@@ -132,12 +133,36 @@ function getTrackFeatures(songList) {
   });
 }
 
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
 function generate(param) {
+  trackList = shuffle(trackList);
   var generated = [];
+  var count = 0;
   for (var i = trackList.length - 1; i >= 0; i--) {
     if (Math.abs(parseInt(trackList[i].analysis.tempo) - parseInt(param.bpm)) < BPM_THRESHOLD) {
+      count ++;
       // console.log(trackList[i].analysis.tempo - param.bpm);
       generated.push(trackList[i]);
+      if (count === parseInt(param.listLength)) {
+        return generated;
+      }
     }
   }
   return generated;
