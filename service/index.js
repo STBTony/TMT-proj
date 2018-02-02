@@ -37,11 +37,12 @@ var userSpotifyApi = new SpotifyWebApi({
 });
 
 getToken(true);
+//refresh authentification every 15 minutes
 setInterval(function() {
   console.log("refershing token automatically");
   refreshUserAccess();
-  getToken(false);
-}, 1800000);
+  //getToken(false);
+}, 900000);
 
 // authenticate and get token
 function getToken(onStart) {
