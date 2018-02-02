@@ -155,9 +155,9 @@ button {
   }
 
 }
-@media (max-width: 1281px) and (min-width:961px) { /* smartphones, iPhone, portrait 480x320 phones */ 
+@media (max-width: 1400px) and (min-width:961px) { /* smartphones, iPhone, portrait 480x320 phones */ 
   .title {
-    font-size: 140px;
+    font-size: 120px;
   }
 }
 @media (min-width:481px)  { /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */ }

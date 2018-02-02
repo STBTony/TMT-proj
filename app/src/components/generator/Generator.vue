@@ -12,14 +12,14 @@
         <div class="col-md-4 col-sm-12">
           <div class="input-generic">
             <input name="bpm" id="bpm" type="number" number maxlength="3" v-model="bpm" min="0" pattern="\d{3}" max="300">
-            <label for="bpm">BPM</label>
+            <label for="bpm">BPM&nbsp;&nbsp;&nbsp;</label>
           </div>
         </div>
         <div class="col-md-4 col-sm-12">
           <div class="input-generic"><!-- 
             <input name="bpm" id="bpm" type="number" number maxlength="3" v-model="bpm" min="0" pattern="\d{3}" max="300">
             <label for="bpm">BPM</label> -->
-            <h2>{{genre}}<label for="bpm">Genre</label></h2>
+            <h2>{{genre}}<label for="bpm">&nbsp;Genre&nbsp;&nbsp;&nbsp;</label></h2>
             <p>New features coming soon!</p>
           </div>
         </div>
@@ -172,7 +172,7 @@ p, a {
 .input-generic input {
   background: transparent !important;
   /*border: none !important;*/
-  font-size: 150px;
+  font-size: 130px;
   font-weight: 100;
   width: 260px;
   text-align: right;
@@ -182,7 +182,7 @@ p, a {
 .input-generic h2 {
   font-size: 120px;
   font-weight: 100;
-  margin-top: 60px;
+  margin-top: 45px;
   cursor: not-allowed;
 }
 .input-generic p {
@@ -267,7 +267,10 @@ p, a {
   .input-generic input, .input-generic h2 {
     font-size: 80px;
     text-align: center;
-    margin-left: -15px;
+    margin-left: -30px;
+  }
+  .input-generic h2 {
+    margin-left: -10px;
   }
   .generate-song a, .create-playlist a {
     font-size: 20px;
@@ -278,8 +281,22 @@ p, a {
   }
 }
 
-@media (max-width: 1281px) and (min-width:961px) { /* smartphones, iPhone, portrait 480x320 phones */ 
-
+@media (max-width: 1400px) and (min-width:961px) { /* smartphones, iPhone, portrait 480x320 phones */ 
+  .input-generic input {
+    font-size: 80px;
+    width: 200px;
+  }
+  .input-generic h2 {
+    font-size: 75px;
+    margin-top: 35px;
+  }
+  .generate-song a {
+    font-size: 30px;
+  }
+  #msg {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
 }
 
 nav a {

@@ -1,1 +1,64 @@
-<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>TMT Spotify Playlist Generator</title><link rel="shortcut icon" href=/favicon.png><link href=/static/css/app.b63c202cdbbd086702204fc5d1e29aa6.css rel=stylesheet></head><body><div id=app></div><style>@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:100,300,400');</style><script type=text/javascript src=/static/js/manifest.e4591420805b033cdc59.js></script><script type=text/javascript src=/static/js/vendor.135113d269666ef7dcbc.js></script><script type=text/javascript src=/static/js/app.18ed4d6fc7f59879b262.js></script></body></html>
+<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>TMT Spotify Playlist Generator</title><link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel="shortcut icon" href=/favicon.png><link href=/static/css/app.a3a388ab444f588848996a8b33265644.css rel=stylesheet></head><body><div id=app><div class=loading-screen><div v-bind:style=styles class=spinner></div></div></div><script async src="https://www.googletagmanager.com/gtag/js?id=UA-113460781-1"></script><script>window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-113460781-1');</script><style>@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:100,300,400');
+       .loading-screen {
+    height: 100%;
+    width:  100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color:rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+  }
+  .spinner {
+    width: 50px;
+    height: 50px;
+    transform: translate3d(0, 0, 0);
+    position: relative;
+    background: #bec8ff;
+    border-radius: 50%;
+    overflow: hidden;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .spinner:before, .spinner:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+  .spinner:before {
+    animation: circle-5-spinner 1s infinite;
+    transform-origin: 0 50%;
+    left: 0;
+    background: #c7efcf;
+  }
+  .spinner:after {
+    animation: circle-5-spinner 1s 0.2s reverse infinite;
+    transform-origin: 100% 50%;
+    right: 0;
+    background: #fff;
+  }
+  @keyframes circle-5-spinner {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(360deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }</style><script type=text/javascript src=/static/js/manifest.158f444d58d1c4f7e2d2.js></script><script type=text/javascript src=/static/js/vendor.135113d269666ef7dcbc.js></script><script type=text/javascript src=/static/js/app.037756b0c985d596fabb.js></script></body></html>
